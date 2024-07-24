@@ -1,0 +1,16 @@
+{
+  "name": "prince453/hirenexus-php",
+  "description": "Job Listing App",
+  "authors": [
+    {
+      "name": "Random",
+      "email": "alexdrive790@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Framework\\": "Framework/",
+      "App\\": "App/"
+    }
+  }
+}
