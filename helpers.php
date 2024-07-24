@@ -7,7 +7,7 @@ function basePath($path = "")
 
 function loadView($name, $data = [])
 {
-    $viewPath =  basePath("/views/{$name}.views.php");
+    $viewPath =  basePath("App/views/{$name}.views.php");
 
     if (file_exists($viewPath)) {
         extract($data);
@@ -20,7 +20,7 @@ function loadView($name, $data = [])
 
 function partialView($name)
 {
-    require basePath("/views/partials/{$name}.php");
+    require basePath("App/views/partials/{$name}.php");
 }
 
 
