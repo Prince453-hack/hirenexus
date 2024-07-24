@@ -10,7 +10,16 @@ class Router
 
     public function registerRoute($method, $uri, $action)
     {
+
+        if (strpos($action, '@') === false) {
+            throw new \InvalidArgumentException("Action must be in the format 'Controller@method'");
+        }
+
         list($controller, $controllerMethod) = explode('@', $action);
+
+        if (empty($controller) || empty($controllerMethod)) {
+            throw new \InvalidArgumentException("Controller and method must not be empty");
+        }
 
         $this->routes[] = [
             "method" => $method,
@@ -40,19 +49,46 @@ class Router
         $this->registerRoute("DELETE", $uri, $controller);
     }
 
-
-    public function route($uri, $method)
+    public function route($uri)
     {
-        foreach ($this->routes as $route) {
-            if ($route["uri"] === $uri && $route["method"] === $method) {
-                $controller = 'App\\Controllers\\' . $route["controller"];
-                $controllerMethod = $route["controllerMethod"];
+        $requestMethod = $_SERVER["REQUEST_METHOD"];
+        $found = false;
 
-                $controllerInstance = new $controller();
-                $controllerInstance->$controllerMethod();
-                return;
+        foreach ($this->routes as $route) {
+            $uriSegments = explode('/', trim($uri, '/'));
+            $routeSegments = explode('/', trim($route['uri'], '/'));
+
+            $match = true;
+
+            if (count($uriSegments) === count($routeSegments) && strtoupper($route['method']) === $requestMethod) {
+                $params = [];
+                $match = true;
+
+                for ($i = 0; $i < count($uriSegments); $i++) {
+                    if ($routeSegments[$i] !== $uriSegments[$i] && !preg_match('/\{(.+?)\}/', $routeSegments[$i])) {
+                        $match = false;
+                        break;
+                    }
+
+                    if (preg_match('/\{(.+?)\}/', $routeSegments[$i], $matches)) {
+                        $params[$matches[1]] = $uriSegments[$i];
+                    }
+                }
+
+                if ($match) {
+                    $controller = 'App\\Controllers\\' . $route["controller"];
+                    $controllerMethod = $route["controllerMethod"];
+
+                    $controllerInstance = new $controller();
+                    $controllerInstance->$controllerMethod($params);
+                    $found = true;
+                    break;
+                }
             }
         }
-        ErrorController::notFound();
+
+        if (!$found) {
+            ErrorController::notFound();
+        }
     }
 }
