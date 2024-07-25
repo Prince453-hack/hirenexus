@@ -69,14 +69,35 @@ class ListingController
             }
         }
 
-
-
         if (!empty($errors)) {
             loadView('listings/create', [
                 'errors' => $errors,
                 'listing' => $newListingData
             ]);
         } else {
+            $field = [];
+            foreach ($newListingData as $field => $value) {
+                $fields[] = $field;
+            }
+
+            $fields = implode(", ", $fields);
+
+            $values = [];
+            foreach ($newListingData as $field => $value) {
+                if ($value === "") {
+                    $newListingData[$field] = null;
+                }
+
+                $values[] = ':' . $field;
+            }
+            $values = implode(", ", $values);
+
+            $query = "INSERT INTO listings ({$fields}) VALUES ({$values})";
+
+            $this->db->query($query, $newListingData);
+
+            header('Location: /listings');
+            exit;
         }
     }
 }
