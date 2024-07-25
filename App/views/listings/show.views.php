@@ -4,6 +4,11 @@
 <!-- Top Banner -->
 <?php partialView("topBanner") ?>
 
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this listing?");
+    }
+</script>
 
 
 <section class="container mx-auto p-4 mt-4">
@@ -16,7 +21,8 @@
             <div class="flex space-x-4 ml-4">
                 <a href="/edit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded">Edit</a>
                 <!-- Delete Form -->
-                <form method="POST">
+                <form method="POST" onsubmit="return confirmDelete()">
+                    <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded">Delete</button>
                 </form>
                 <!-- End Delete Form -->

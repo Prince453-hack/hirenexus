@@ -101,4 +101,25 @@ class ListingController
             exit;
         }
     }
+
+    public function destroy($params)
+    {
+        $id = $params["id"];
+
+        $params = ['id' => $id];
+
+        $listing = $this->db->query('SELECT * FROM listings WHERE id = :id', $params)->fetch();
+
+        if (!$listing) {
+            ErrorController::notFound('Listing not found');
+            return;
+        }
+
+        $this->db->query('DELETE FROM listings WHERE id = :id', $params);
+
+        $_SESSION['success_message'] = 'Listing deleted successfully';
+
+        header('Location: /listings');
+        exit;
+    }
 }
