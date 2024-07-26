@@ -19,3 +19,6 @@ $router->post('/auth/register', 'UserController@store', ['guest']);
 
 $router->post('auth/logout', 'UserController@logout', ['auth']);
 $router->post('/auth/login', 'UserController@authenticate', ['guest']);
+
+
+$router->get('/listing/search', 'ListingController@search');
