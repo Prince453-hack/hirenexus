@@ -145,6 +145,12 @@ class ListingController
             return;
         }
 
+        if (!Authorization::isOwner($listing->user_id)) {
+            $_SESSION['error_message'] = 'You are not authorized to edit this listing';
+            header('Location: /listings/' . $listing->id);
+            exit;
+        }
+
         loadView("listings/edit", [
             'listing' => $listing
         ]);
@@ -161,6 +167,12 @@ class ListingController
         if (!$listing) {
             ErrorController::notFound('Listing not found');
             return;
+        }
+
+        if (!Authorization::isOwner($listing->user_id)) {
+            $_SESSION['error_message'] = 'You are not authorized to update this listing';
+            header('Location: /listings/' . $listing->id);
+            exit;
         }
 
         $allowedFields = [
