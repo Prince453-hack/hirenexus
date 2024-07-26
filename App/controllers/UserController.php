@@ -113,4 +113,58 @@ class UserController
         header('Location: /');
         exit;
     }
+
+    public function authenticate()
+    {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        $errors = [];
+
+        if (!Validation::email($email)) {
+            $errors['email'] = 'Invalid email address';
+        }
+
+        if (!Validation::string($password, 6, 50)) {
+            $errors['password'] = 'Password must be at least 6 characters';
+        }
+
+        if (!empty($errors)) {
+            loadView('users/login', [
+                'errors' => $errors,
+            ]);
+            exit;
+        }
+
+        $params = ['email' => $email];
+
+        $user = $this->db->query('SELECT * FROM users WHERE email = :email', $params)->fetch();
+
+        if (!$user) {
+            $errors['email'] = 'Incorrect Credentials';
+            loadView('users/login', [
+                'errors' => $errors,
+            ]);
+            exit;
+        }
+
+        if (!password_verify($password, $user->password)) {
+            $errors['password'] = 'Incorrect Credentials';
+            loadView('users/login', [
+                'errors' => $errors,
+            ]);
+            exit;
+        }
+
+        Session::set('user', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'city' => $user->city,
+            'state' => $user->state,
+        ]);
+
+        header('Location: /');
+        exit;
+    }
 }

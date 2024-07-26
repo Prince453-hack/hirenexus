@@ -18,3 +18,4 @@ $router->post('/auth/register', 'UserController@store');
 
 
 $router->post('auth/logout', 'UserController@logout');
+$router->post('/auth/login', 'UserController@authenticate');
